@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 *.swp
 API/appsettings.json
 API/rablinkin.db
+API/rablinkin.db-shm
+API/rablinkin.db-shm
+API/rablinkin.db-wal
