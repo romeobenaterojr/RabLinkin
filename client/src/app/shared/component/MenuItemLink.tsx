@@ -15,7 +15,7 @@ export default function MenuItemLink({children, to} : {children: ReactNode, to: 
                 fontWeight: 'bold',
                 color: 'inherit',
                 '&.active': {
-                    color: 'yellow'
+                    color: 'yellowgreen'
                 }
 
             }
