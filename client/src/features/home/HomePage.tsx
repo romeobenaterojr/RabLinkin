@@ -38,7 +38,7 @@ export default function HomePage() {
             </Typography>
           </Box>
             <Typography variant="h2">
-              Welcome to React and .Net Code
+              Welcome to React and .Net Core
             </Typography>
             <Button
               component={Link}

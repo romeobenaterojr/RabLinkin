@@ -4,11 +4,14 @@ import { NavLink } from "react-router";
 import MenuItemLink from "../shared/component/MenuItemLink";
 import { useStore } from "../../lib/hooks/useStore";
 import { Observer } from "mobx-react-lite";
+import { useAccount } from "../../lib/hooks/useAccount";
+import UserMenu from "./UserMenu";
 
 
 
 export default function NavBar() {
   const {uiStore} = useStore();
+  const { currentUser } = useAccount();
     return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{backgroundImage: 'linear-gradient(135deg, #182a73 0%, #218aae 69%, #20a7ac 89%)', 
@@ -27,10 +30,6 @@ export default function NavBar() {
                 >
                   Activities
                 </MenuItemLink>
-                <MenuItemLink  to='/createActivity' 
-                >
-                  Create Activity
-                </MenuItemLink>
                 <MenuItemLink  to='/counter' 
                 >
                   Counter
@@ -42,7 +41,16 @@ export default function NavBar() {
                
               </Box>
              <MenuItem> 
-                User Menu
+                <Box display='flex' alignItems='center'>
+                    {currentUser ? (
+                      <UserMenu />
+                    ) : (
+                      <>
+                        <MenuItemLink to='/login'>Login</MenuItemLink>
+                        <MenuItemLink to='/registe'>Register</MenuItemLink>
+                      </>
+                    )}
+                </Box>
              </MenuItem>
             </Toolbar>
         </Container>
