@@ -1,4 +1,5 @@
 using API.DTOs;
+using Application.Activities.Commands;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +55,7 @@ namespace API.Controllers
 
             });
         }
-        
+
         [HttpPost("logout")]
         public async Task<ActionResult> Logout()
         {
@@ -63,5 +64,8 @@ namespace API.Controllers
             return NoContent();
 
         }
+
+       
+
     }
 }
