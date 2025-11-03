@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router";
 import { formatDate } from "../../../lib/util/util";
+import AvatarPopover from "../../../app/shared/AvatarPopover";
 
 
 type Props = {
@@ -19,12 +20,9 @@ type Props = {
 };
 
 export default function ActivityCard({ activity }: Props) {
-  const isHost = false;
-  const isGoing = false;
-  const isCancelled = false;
 
-  const label = isHost ? "You are hosting" : "You are going";
-  const color = isHost ? "secondary" : isGoing ? "warning" : "default";
+  const label = activity.isHost ? "You are hosting" : "You are going";
+  const color = activity.isHost ? "secondary" : activity.isGoing ? "warning" : "default";
 
   return (
     <Card elevation={3} sx={{ borderRadius: 3 }}>
@@ -35,7 +33,7 @@ export default function ActivityCard({ activity }: Props) {
           title={activity.title}
           subheader={
             <>
-              Hosted by <Link to="/profiles/rom">Rom</Link>
+              Hosted by <Link to={`/profiles/${activity.hostId}`}>{activity.hostDisplayName}</Link>
             </>
           }
           slots={{
@@ -53,10 +51,10 @@ export default function ActivityCard({ activity }: Props) {
         />
 
         <Box display="flex" flexDirection="column" gap={1.5} mr={2}>
-          {(isHost || isGoing) && (
-            <Chip label={label} color={color} sx={{ borderRadius: 2 }} />
+          {(activity.isHost || activity.isGoing) && (
+            <Chip variant="outlined" label={label} color={color} sx={{ borderRadius: 2 }} />
           )}
-          {isCancelled && (
+          {activity.isCancelled && (
             <Chip label="Cancelled" color="error" sx={{ borderRadius: 2 }} />
           )}
         </Box>
@@ -89,7 +87,10 @@ export default function ActivityCard({ activity }: Props) {
             pl: 3,
           }}
         >
-          Attendees go here
+          {activity.attendees.map(att => (
+           <AvatarPopover profile={att} key={att.id} />
+
+          ))}
         </Box>
       </CardContent>
 
