@@ -47,6 +47,7 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new GetProfile.Query { UserId = userId }));
         }
+        
     
     }
 }

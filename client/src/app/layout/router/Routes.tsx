@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter } from "react-router";
 import App from "../App";
 import HomePage from "../../../features/home/HomePage";
 import ActivitiesDashboard from "../../../features/activities/dashboard/ActivitiesDashboard";
@@ -11,6 +11,7 @@ import ServerError from "../../../features/errors/ServerError";
 import LoginForm from "../../../features/account/LoginForm";
 import RequireAuth from "./RequireAuth";
 import RegisterForm from "../../../features/account/RegisterForm";
+import ProfilePage from "../../../features/profiles/ProfilePage";
 
 export const router = createBrowserRouter([
 
@@ -23,16 +24,16 @@ export const router = createBrowserRouter([
                 {path: 'activities/:id', element: <ActivityDetailPage />},
                 {path: 'createActivity', element: <ActivityForm key='create' />},
                 {path: 'manage/:id', element: <ActivityForm />},
+                {path: 'profile/:id', element: <ProfilePage />},
             ]},
-            {path: '', element: <HomePage />},
-            
+            {path: '', element: <HomePage />},      
             {path: 'counter', element: <Counter />},
             {path: 'errors', element: <TestErrors />},
             {path: 'not-found', element: <NotFound />},
             {path: 'server-error', element: <ServerError />},
             {path: 'login', element: <LoginForm />},
             {path: 'register', element: <RegisterForm />},
-            {path: '*', element: <Navigate replace to='not/found' />},
+            { path: 'not-found', element: <NotFound /> },
 
         ]
     }
