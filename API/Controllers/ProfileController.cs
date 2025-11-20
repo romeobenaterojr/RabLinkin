@@ -47,6 +47,16 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new GetProfile.Query { UserId = userId }));
         }
+       [HttpPut]
+        public async Task<ActionResult> UpdateProfile([FromBody] EditProfile.Command command)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState); // will show validation errors
+
+            return HandleResult(await Mediator.Send(command));
+        }
+
+        
         
     
     }
