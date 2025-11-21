@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import agent from "../api/agent";
 
 
-export const useProfile = (id?: string) => {
+export const useProfile = (id?: string, predicate?: string) => {
   const queryClient = useQueryClient();
 
   const { data: profile, isLoading: loadingProfile } = useQuery<Profile>({
@@ -12,7 +12,7 @@ export const useProfile = (id?: string) => {
       const response = await agent.get<Profile>(`/profile/${id}`);
       return response.data;
     },
-    enabled: !!id,
+    enabled: !!id && !predicate
   });
 
   const { data: photos, isLoading: loadingPhoto } = useQuery<Photo[]>({
@@ -21,8 +21,20 @@ export const useProfile = (id?: string) => {
       const response = await agent.get<Photo[]>(`/profile/${id}/photos`);
       return response.data;
     },
-    enabled: !!id,
+    enabled: !!id && !predicate
   });
+
+const { data: followings, isLoading: loadingFollowings } = useQuery<Profile[]>({
+  queryKey: ['followings', id, predicate],
+  queryFn: async () => {
+    const response = await agent.get<Profile[]>(
+      `/profile/${id}/follow-list?predicate=${predicate}`
+    );
+    return response.data;
+  },
+  enabled: !!id && !!predicate
+});
+
 
   const upload = useMutation({
     mutationFn: async (file: Blob) => {
@@ -114,6 +126,26 @@ const setProfile = useMutation({
   },
   });
 
+  const updateFollowing = useMutation({
+    mutationFn: async () => {
+      await agent.post(`/profile/${id}/follow`)
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(['profile', id], (profile: Profile) => {
+        queryClient.invalidateQueries({queryKey: ['followings', id, 'followers']})
+        if (!profile || profile.followersCount === undefined) return profile;
+        return {
+          ...profile,
+          following: !profile.following,
+          followersCount: profile.following 
+            ? profile.followersCount - 1 
+            :  profile.followersCount + 1
+
+        }
+      })
+    }
+  })
+
   const isCurrentUser = useMemo(() => {
   const currentUser = queryClient.getQueryData<User>(['user']);
   return id === currentUser?.id;
@@ -130,6 +162,9 @@ const setProfile = useMutation({
     upload,
     setMainPhoto,
     deletePhoto,
-    setProfile
+    setProfile,
+    updateFollowing,
+    followings,
+    loadingFollowings
   };
 };
