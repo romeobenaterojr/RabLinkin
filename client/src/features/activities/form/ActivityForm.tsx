@@ -80,7 +80,7 @@ export default function ActivityForm() {
         flexDirection="column"
         gap={3}
       >
-        <TextInput label="Title" control={control} name="title" />
+        <TextInput label="Title" control={control} name="title"  />
         <TextInput label="Description" control={control} name="description" multiline rows={3} />
         <Box display="flex" gap={3}>
           <SelectInput items={categoryOptions} label="Category" control={control} name="category" />
