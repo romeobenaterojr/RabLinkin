@@ -11,7 +11,7 @@ import ServerError from "../../../features/errors/ServerError";
 import LoginForm from "../../../features/account/LoginForm";
 import RequireAuth from "./RequireAuth";
 import RegisterForm from "../../../features/account/RegisterForm";
-import ProfilePage from "../../../features/profiles/ProfilePage";
+import ProfilePage from "../../../features/profiles_temp/ProfilePage";
 
 export const router = createBrowserRouter([
 
