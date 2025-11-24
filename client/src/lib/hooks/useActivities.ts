@@ -24,7 +24,6 @@ export const useActivities = (id?: string) => {
             });
         return response.data;
         },
-        staleTime: 1000 * 60 * 5,
         placeholderData: keepPreviousData,
         initialPageParam: null,
         getNextPageParam:(lastpage) => lastpage.nextCursor,

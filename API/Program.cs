@@ -33,7 +33,7 @@ builder.Services.AddControllers(options =>
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 // CORS (for frontend + SignalR)
@@ -111,6 +111,10 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+
 // -----------------------------
 // Map endpoints
 // -----------------------------
@@ -119,6 +123,7 @@ app.MapGroup("api").MapIdentityApi<User>();
 
 // SignalR hub (can allow anonymous if desired)
 app.MapHub<CommentHub>("/comments");
+app.MapFallbackToController("Index", "Fallback");
 // app.MapHub<CommentHub>("/hubs/comments");
 
 // -----------------------------

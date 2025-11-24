@@ -11,7 +11,7 @@ import { categoryOptions } from "./categoryOption";
 import DateTimeInput from "../../../app/shared/component/DateTimeInput";
 import LocationInput from "../../../app/shared/component/LocationInput";
 import { activitySchema, type ActivitySchema } from "../../../lib/schemas/activitySchema";
-import type { Activity } from "../../../lib/types";
+
 
 export default function ActivityForm() {
   const navigate = useNavigate();
@@ -48,6 +48,11 @@ export default function ActivityForm() {
       ...location,
       id: activity?.id || crypto.randomUUID(),
       isCancelled: activity?.isCancelled ?? false,
+      attendees: [],
+      isGoing: false,
+      isHost: false,
+      hostId: "",
+      hostDisplayName: ""
     };
 
     if (activity) {
@@ -84,7 +89,7 @@ export default function ActivityForm() {
         <LocationInput control={control} label="Enter the Location" name="location" />
 
         <Box display="flex" justifyContent="end" gap={3}>
-          <Button color="inherit">Cancel</Button>
+          <Button onClick={() => navigate(-1)} color="inherit">Cancel</Button>
           <Button
             color="success"
             type="submit"

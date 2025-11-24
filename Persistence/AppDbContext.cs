@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +10,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 {
     public required DbSet<Activity> Activities { get; set; }
     public required DbSet<Photo> Photos { get; set; }
-
     public required DbSet<ActivityAttendee> ActivityAttendees { get; set; }
-
     public required DbSet<Comment> Comments { get; set; }
     public required DbSet<UserFollowing> UserFollowings { get; set; }
 
@@ -21,7 +18,9 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     {
         base.OnModelCreating(builder);
 
+        // ActivityAttendee composite key
         builder.Entity<ActivityAttendee>(x => x.HasKey(a => new { a.ActivityId, a.UserId }));
+
         builder.Entity<ActivityAttendee>()
             .HasOne(x => x.User)
             .WithMany(x => x.Activities)
@@ -32,21 +31,23 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .WithMany(x => x.Attendees)
             .HasForeignKey(x => x.ActivityId);
 
+        // UserFollowing composite key
         builder.Entity<UserFollowing>(x =>
         {
-            x.HasKey(k => new {k.ObserverId, k.TargetId});
+            x.HasKey(k => new { k.ObserverId, k.TargetId });
 
             x.HasOne(o => o.Observer)
                 .WithMany(f => f.Followings)
                 .HasForeignKey(o => o.ObserverId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
+                .OnDelete(DeleteBehavior.Cascade); // Cascade when Observer deleted
+
             x.HasOne(o => o.Target)
                 .WithMany(f => f.Followers)
                 .HasForeignKey(o => o.TargetId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
         });
 
+        // Global UTC DateTime conversion
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),
             v => DateTime.SpecifyKind(v, DateTimeKind.Utc)

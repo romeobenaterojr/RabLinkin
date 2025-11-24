@@ -63,7 +63,7 @@ export default function NavBar() {
                     ) : (
                       <>
                         <MenuItemLink to='/login'>Login</MenuItemLink>
-                        <MenuItemLink to='/registe'>Register</MenuItemLink>
+                        <MenuItemLink to='/register'>Register</MenuItemLink>
                       </>
                     )}
                 </Box>
