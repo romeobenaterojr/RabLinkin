@@ -13,6 +13,7 @@ import RequireAuth from "./RequireAuth";
 import RegisterForm from "../../../features/account/RegisterForm";
 import ProfilePage from "../../../features/profiles/ProfilePage";
 import VerifyEmail from "../../../features/account/VerifyEmail";
+import AuthCallback from "../../../features/account/AuthCallback";
 
 export const router = createBrowserRouter([
 
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
             {path: 'login', element: <LoginForm />},
             {path: 'register', element: <RegisterForm />},
             {path: 'confirm-email', element: <VerifyEmail />},
+            {path: 'auth-callback', element: <AuthCallback />},
             { path: 'not-found', element: <NotFound /> },
 
         ]

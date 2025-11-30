@@ -1,6 +1,6 @@
 
 import { Button, Paper, Typography } from "@mui/material";
-import { useAccount } from "../../lib/hooks/useAccount";
+// import { useAccount } from "../../lib/hooks/useAccount";
 import { Check } from "@mui/icons-material";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 }
 
 export default function RegisterSuccess({email}: Props) {
-  const {resendConfirmationEmail} =useAccount();
+//   const {resendConfirmationEmail} =useAccount();
 
   if (!email) return null;
   return (
@@ -32,13 +32,16 @@ export default function RegisterSuccess({email}: Props) {
         <Typography gutterBottom variant="h3">
             You have successfully registered!
         </Typography>
-         <Typography gutterBottom variant="h3">
+         {/* <Typography gutterBottom variant="h3">
             Please check your email to confirm your account
         </Typography>
-        <Button fullWidth onClick={() => resendConfirmationEmail.mutate({
+        <Button disabled fullWidth onClick={() => resendConfirmationEmail.mutate({
             email,
             userId: null
         })}>
+            Re-send confirmation email
+        </Button> */}
+          <Button disabled fullWidth >
             Re-send confirmation email
         </Button>
     </Paper>
