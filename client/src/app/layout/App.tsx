@@ -3,29 +3,33 @@ import NavBar from "./NavBar";
 import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import HomePage from "../../features/home/HomePage";
 
-
 function App() {
-
   const location = useLocation();
 
   return (
-  
+    <Box sx={{ bgcolor: "#eeeeee", minHeight: "100vh" }}>
+      <ScrollRestoration />
+      <CssBaseline />
 
-    <Box sx={{bgcolor: '#eeeeee', minHeight: '100vh'}}>
-       <ScrollRestoration />
-       <CssBaseline />
-       {location.pathname === '/' ? <HomePage /> : (
+      {location.pathname === "/" ? (
+        <HomePage />
+      ) : (
         <>
-            <NavBar />
-            <Container maxWidth='xl' sx={{pt: 14}}>
-               <Outlet />
-              
-            </Container>
+          <NavBar />
+
+          <Container
+            maxWidth="xl"
+            sx={{
+              pt: { xs: 10, sm: 12, md: 14 },
+              pb: 4,
+            }}
+          >
+            <Outlet />
+          </Container>
         </>
-         
-       )}     
-    </Box>    
-  )
+      )}
+    </Box>
+  );
 }
 
-export default App
+export default App;
