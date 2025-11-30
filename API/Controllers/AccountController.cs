@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text;
 using API.DTOs;
 using Domain;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static API.DTOs.GetHubInfo;
 
 namespace API.Controllers
 {
@@ -20,6 +22,91 @@ namespace API.Controllers
         private readonly SignInManager<User> _signInManager = signInManager;
         private readonly IEmailSender<User> _emailSender = emailSender;
         private readonly IConfiguration _configuration = configuration;
+
+            [AllowAnonymous]
+            [HttpPost("github-login")]
+            public async Task<ActionResult> LoginWithGitHub(string code)
+            {
+                if (string.IsNullOrEmpty(code))
+                return BadRequest("Missing authorization code");
+                
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var tokenResponse = await httpClient.PostAsJsonAsync(
+                    "https://github.com/login/oauth/access_token" , 
+                    new GitHubAuthRequest
+                    {
+                        Code = code,
+                        ClientId = _configuration["Authentication:Github:ClientId"]!,
+                        ClientSecret = _configuration["Authentication:Github:ClientSecret"]!,
+                        RedirectUri = $"{_configuration["ClientAppUrl"]}/auth-callback"
+                    }
+                );
+
+                if (!tokenResponse.IsSuccessStatusCode)
+                    return BadRequest("Failed to get access token");
+                
+                var tokenContent = await tokenResponse.Content.ReadFromJsonAsync<GitHubTokenREsponse>();
+                if (string.IsNullOrEmpty(tokenContent?.AccessToken))
+                    return BadRequest("Failed to retrieve access token");
+
+                //---------------------------------------------------------------
+                //step 2 fecth to github
+                httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", tokenContent.AccessToken);
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("RabLinkin");
+
+                var userResponse =  await httpClient.GetAsync("https://api.github.com/user");
+
+                if (!userResponse.IsSuccessStatusCode)
+                    return BadRequest("Failed to fect user form github");
+
+                var user = await userResponse.Content.ReadFromJsonAsync<GitHubUser>();
+
+                if (user == null) return BadRequest("Failed to Read USer from github");
+
+                //set 3 get email id need
+             if (string.IsNullOrEmpty(user?.Email))
+                {
+                    var emailResponse = await httpClient.GetAsync("https://api.github.com/user/emails");
+
+                    if (!emailResponse.IsSuccessStatusCode)
+                        return BadRequest("Failed to fetch emails from GitHub");
+
+                    var emails = await emailResponse.Content.ReadFromJsonAsync<List<GithubEmail>>();
+
+                    var primary = emails?.FirstOrDefault(e => e.Primary && e.Verified)?.Email;
+                    if (string.IsNullOrEmpty(primary))
+                        return BadRequest("Failed to get email from GitHub");
+
+                    user!.Email = primary;
+                }
+
+                //find or create user step 4
+                var existingUser = await _signInManager.UserManager.FindByEmailAsync(user.Email);
+
+                if(existingUser == null)
+                {
+                    existingUser = new User
+                    {
+                        Email = user.Email,
+                        UserName = user.Email,
+                        DisplayName = user.Name,
+                        ImageUrl  = user.ImageUrl
+                    };
+
+                    var createdResult = await _signInManager.UserManager.CreateAsync(existingUser);
+                    if (!createdResult.Succeeded)
+                        return BadRequest("Failed to create user");
+                }
+
+                await _signInManager.SignInAsync(existingUser, false);
+
+                return Ok();
+
+                
+            }
 
         [AllowAnonymous]
         [HttpPost("register")]
